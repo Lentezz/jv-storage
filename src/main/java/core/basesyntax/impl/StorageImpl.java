@@ -4,47 +4,37 @@ import core.basesyntax.Storage;
 
 public class StorageImpl<K, V> implements Storage<K, V> {
 
-    private int capacity = 10;
-    private final Node<K, V>[] table = new Node[capacity];
-    private int currentIndex = 0;
+    private static final int INITIAL_CAPACITY = 10;
+    private final Node<K, V>[] table = new Node[INITIAL_CAPACITY];
+    private int size;
 
     @Override
     public void put(K key, V value) {
-        if (this.get(key) == null && size() < capacity - 1) {
-            table[currentIndex] = new Node(key, value);
-            currentIndex++;
+        Node<K, V> node = getNode(key);
+        if (node == null && size() < INITIAL_CAPACITY - 1) {
+            table[size++] = new Node<>(key, value);
         } else {
-            for (Node node : table) {
-                if ((node != null && node.getKey() != null
-                        && node.getKey().equals(key))
-                        || (node != null && key == null
-                        && node.getKey() == null)) {
-                    node.setValue(value);
-                }
-            }
+            node.setValue(value);
         }
     }
 
     @Override
     public V get(K key) {
-        for (Node node : table) {
-            if (node != null && (node.getKey() != null && node.getKey().equals(key)
-                    || (node.getKey() == null && key == null))) {
-                return (V) node.value;
+        Node<K, V> node = getNode(key);
+        return node == null ? null : node.value;
+    }
+
+    private Node<K, V> getNode(K key) {
+        for (Node<K, V> node : table) {
+            if (node != null && (key == null ? node.getKey() == null : key.equals(node.getKey()))) {
+                return node;
             }
         }
-
         return null;
     }
 
     @Override
     public int size() {
-        int size = 0;
-        for (Node node : table) {
-            if (node != null) {
-                size++;
-            }
-        }
         return size;
     }
 
