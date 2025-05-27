@@ -4,30 +4,32 @@ import core.basesyntax.Storage;
 
 public class StorageImpl<K, V> implements Storage<K, V> {
 
-    private final Node[] table = new Node[10];
+    private int capacity = 10;
+    private final Node<K, V>[] table = new Node[capacity];
     private int currentIndex = 0;
 
     @Override
     public void put(K key, V value) {
-        if (this.get(key) == null) {
+        if (this.get(key) == null && size() < capacity - 1) {
             table[currentIndex] = new Node(key, value);
             currentIndex++;
-        }
-        else {
+        } else {
             for (Node node : table) {
-                if ((node != null && node.getKey() != null && node.getKey().equals(key)) || (node != null && key == null && node.getKey() == null)) {
+                if ((node != null && node.getKey() != null
+                        && node.getKey().equals(key))
+                        || (node != null && key == null
+                        && node.getKey() == null)) {
                     node.setValue(value);
                 }
             }
         }
-
-
     }
 
     @Override
     public V get(K key) {
         for (Node node : table) {
-            if (node != null && (node.getKey() != null && node.getKey().equals(key) || (node.getKey() == null && key == null))) {
+            if (node != null && (node.getKey() != null && node.getKey().equals(key)
+                    || (node.getKey() == null && key == null))) {
                 return (V) node.value;
             }
         }
@@ -46,7 +48,7 @@ public class StorageImpl<K, V> implements Storage<K, V> {
         return size;
     }
 
-    private static class Node <K, V> {
+    private static class Node<K, V> {
         private final K key;
         private V value;
 
